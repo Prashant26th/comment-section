@@ -7,6 +7,7 @@ const App = () => {
   const [comments, setComments] = useState(JSON.parse(localStorage.getItem("comments")) || []);
   const [newCommentName, setNewCommentName] = useState("");
   const [newCommentText, setNewCommentText] = useState("");
+  const [sortOrder, setSortOrder] = useState('desc');
 
   useEffect(() => {
     localStorage.setItem('comments', JSON.stringify(comments));
@@ -110,9 +111,13 @@ const App = () => {
   };
 
   const handleSortByDate = () => {
-    setComments((prevComments) =>
-      [...prevComments].sort((a, b) => b.postedAt - a.postedAt)
-    );
+    setComments((prevComments) => {
+      const sortedComments = [...prevComments].sort(
+        (a, b) => (sortOrder === 'asc' ? a.postedAt - b.postedAt : b.postedAt - a.postedAt)
+      );
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      return sortedComments;
+    });
   };
 
   return (
@@ -134,7 +139,9 @@ const App = () => {
           />
           <button className="post-button" onClick={handlePostComment}>Post</button>
         </div>
-        <button className="sorting-button" onClick={handleSortByDate}>Sort By: Date and Time </button>
+        <button className="sorting-button" onClick={handleSortByDate}>
+          Sort by Date ({sortOrder === 'asc' ? 'Oldest First' : 'Newest First'})
+        </button>
         {comments.map((comment) => (
           <Comment
             key={comment.id}
